@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>PostgreSQL CIS Benchmark Report</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:
+        "Segoe UI",
+        Inter,
+        Roboto,
+        Arial,
+        Helvetica,
+        sans-serif;
+    background:#f4f7fb;
+    padding:40px;
+    color:#1f2937;
+    line-height:1.55;
+    font-size:15px;
+}
+
+.container{
+    width:1600px;
+    margin:auto;
+    background:#ffffff;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 8px 30px rgba(20,61,107,.10);
+}
+
+/* Header */
+
+.header{
+    background:linear-gradient(
+        105deg,
+        #12365f 0%,
+        #17457a 35%,
+        #1f5fa8 70%,
+        #2470e5 100%
+    );
+    color:white;
+    padding:32px 36px;
+    min-height:120px;
+    display:flex;
+    align-items:center;
+}
+
+.title{
+    font-size:30px;
+    font-weight:700;
+    letter-spacing:-0.4px;
+    color:white;
+}
+
+.subtitle{
+    margin-top:8px;
+    font-size:15px;
+    color:#eef5fb;
+    letter-spacing:.2px;
+}
+
+/* Sections */
+
+.section{
+    padding:32px 36px;
+}
+
+/* Executive Summary */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:24px;
+    width:100%;
+}
+
+.summary-card{
+    background:#ffffff;
+    border:1px solid #e1e6ec;
+    border-radius:12px;
+    padding:20px 22px;
+    min-height:105px;
+    box-shadow:0 4px 12px rgba(20,61,107,.08);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.summary-label{
+    font-size:13px;
+    font-weight:600;
+    color:#53657a;
+    margin-bottom:12px;
+}
+
+.summary-number{
+    font-size:36px;
+    line-height:1;
+    font-weight:700;
+}
+
+.total-number{
+    color:#143d6b;
+}
+
+.pass-number{
+    color:#16833b;
+}
+
+.fail-number{
+    color:#d62828;
+}
+
+.error-number{
+    color:#8b1e1e;
+}
+
+.compliance-number{
+    color:#16833b;
+}
+
+/* Server Information */
+
+.infoTable{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+.infoTable td{
+    padding:9px 8px;
+    border:none;
+    font-size:15px;
+}
+
+.infoTable td:nth-child(1),
+.infoTable td:nth-child(3){
+    width:16%;
+    font-weight:600;
+    color:#243447;
+}
+
+.infoTable td:nth-child(2),
+.infoTable td:nth-child(4){
+    width:34%;
+    color:#374151;
+}
+
+/* Tables */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+th{
+    background:#143d6b;
+    color:white;
+    padding:12px;
+    text-align:center;
+    font-size:14px;
+    font-weight:600;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    vertical-align:top;
+    font-size:14px;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+/* Group Summary */
+
+.group-summary{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    border:1px solid #e1e6ec;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.group-summary th{
+    background:#143d6b;
+    color:white;
+    padding:12px 14px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.group-summary td{
+    padding:11px 14px;
+    font-size:15px;
+    border-bottom:1px solid #e5e9ee;
+    color:#172b4d;
+}
+
+.group-summary th:first-child,
+.group-summary td:first-child{
+    width:40%;
+    text-align:left;
+}
+
+.group-summary th:not(:first-child),
+.group-summary td:not(:first-child){
+    width:15%;
+    text-align:center;
+}
+
+.group-summary tr:last-child td{
+    border-bottom:none;
+}
+
+.group-total td{
+    background:#edf3fa;
+    font-weight:700;
+    font-size:16px;
+    color:#111827;
+}
+
+/* Status Badges */
+
+.badge{
+    color:white;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    display:inline-block;
+    letter-spacing:.2px;
+}
+
+.status-pass{
+    background:#2e7d32;
+}
+
+.status-fail{
+    background:#c62828;
+}
+
+.status-manual{
+    background:#ef6c00;
+}
+
+.status-info{
+    background:#1565c0;
+}
+
+.status-not_applicable{
+    background:#616161;
+}
+
+.status-error{
+    background:#6a1b1a;
+}
+
+.status-unknown{
+    background:#616161;
+}
+
+/* Detailed Findings */
+
+.findings-table{
+    width:100%;
+    table-layout:fixed;
+}
+
+.findings-table th:nth-child(1),
+.findings-table td:nth-child(1){
+    width:8%;
+}
+
+.findings-table th:nth-child(2),
+.findings-table td:nth-child(2){
+    width:12%;
+}
+
+.findings-table th:nth-child(3),
+.findings-table td:nth-child(3){
+    width:60%;
+}
+
+.findings-table th:nth-child(4),
+.findings-table td:nth-child(4){
+    width:20%;
+}
+
+.findings-table td{
+    padding:10px;
+    border-bottom:1px solid #e5e7eb;
+    vertical-align:top;
+    font-size:15px;
+}
+
+.findings-table td:nth-child(1),
+.findings-table td:nth-child(2),
+.findings-table td:nth-child(4){
+    text-align:center;
+    vertical-align:middle;
+}
+
+.findings-table td:nth-child(3){
+    text-align:left;
+}
+
+/* Minimal Dropdown */
+
+.control-details{
+    border-top:1px solid #e5e7eb;
+    background:#fafbfc;
+    margin-top:10px;
+    border-radius:5px;
+}
+
+.control-details summary{
+    list-style:none;
+    cursor:pointer;
+    padding:9px 12px;
+    color:#143d6b;
+    font-size:13px;
+    font-weight:600;
+    text-align:left;
+}
+
+.control-details summary::-webkit-details-marker{
+    display:none;
+}
+
+.control-details summary::after{
+    content:"+";
+    float:right;
+    font-size:16px;
+    font-weight:600;
+}
+
+.control-details[open] summary::after{
+    content:"−";
+}
+
+.control-details-content{
+    padding:10px 14px 12px 14px;
+    border-top:1px solid #e5e7eb;
+    background:white;
+}
+
+.detail-row{
+    display:grid;
+    grid-template-columns:130px 1fr;
+    padding:8px 0;
+    border-bottom:1px solid #f0f0f0;
+}
+
+.detail-row:last-child{
+    border-bottom:none;
+}
+
+.detail-label{
+    font-weight:600;
+    color:#374151;
+}
+
+.detail-value{
+    white-space:pre-wrap;
+    word-break:break-word;
+    color:#4b5563;
+    font-size:13px;
+}
+
+/* Footer */
+
+.footer{
+    padding:28px;
+    text-align:center;
+    color:#6b7280;
+    font-size:13px;
+    background:#fafbfc;
+    border-top:1px solid #e5e7eb;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- Header -->
+
+<div class="header">
+
+<div>
+
+<div class="title">
+PostgreSQL CIS Benchmark Report
+</div>
+
+<div class="subtitle">
+Security Compliance Assessment
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Server Information -->
+
+<div class="section">
+
+<h2>Server Information</h2>
+
+<br>
+
+<table class="infoTable">
+
+<tr>
+
+<td>Primary Host</td>
+<td>{{.Inventory.Host}}</td>
+
+<td>Version</td>
+<td>{{.Inventory.PostgresVersion}}</td>
+
+</tr>
+
+{{if .Inventory.HAHosts}}
+
+<tr>
+
+<td>HA / Read Replica</td>
+
+<td>
+{{range .Inventory.HAHosts}}
+{{.}}<br>
+{{end}}
+</td>
+
+<td>Platform</td>
+<td>{{.Inventory.Platform}}</td>
+
+</tr>
+
+{{else}}
+
+<tr>
+
+<td>Platform</td>
+<td>{{.Inventory.Platform}}</td>
+
+<td>Benchmark</td>
+<td>{{.Inventory.Benchmark}}</td>
+
+</tr>
+
+{{end}}
+
+{{if .Inventory.DRHost}}
+
+<tr>
+
+<td>DR Host</td>
+<td>{{.Inventory.DRHost}}</td>
+
+<td>Benchmark</td>
+<td>{{.Inventory.Benchmark}}</td>
+
+</tr>
+
+{{end}}
+
+{{if .Inventory.HAHosts}}
+
+<tr>
+
+<td>Benchmark</td>
+<td>{{.Inventory.Benchmark}}</td>
+
+<td>Managed Service</td>
+<td>{{.Inventory.ManagedService}}</td>
+
+</tr>
+
+<tr>
+
+<td>Generated</td>
+<td>{{.Generated}}</td>
+
+<td></td>
+<td></td>
+
+</tr>
+
+{{else}}
+
+<tr>
+
+<td>Generated</td>
+<td>{{.Generated}}</td>
+
+<td>Managed Service</td>
+<td>{{.Inventory.ManagedService}}</td>
+
+</tr>
+
+{{end}}
+
+</table>
+
+</div>
+
+
+<!-- Executive Summary -->
+
+<div class="section">
+
+<h2>Executive Summary</h2>
+
+<br>
+
+<div class="cards">
+
+<div class="summary-card">
+
+<div class="summary-label">
+TOTAL CONTROLS
+</div>
+
+<div class="summary-number total-number">
+{{.Summary.Total}}
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div class="summary-label">
+PASS
+</div>
+
+<div class="summary-number pass-number">
+{{.Summary.Pass}}
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div class="summary-label">
+FAIL
+</div>
+
+<div class="summary-number fail-number">
+{{.Summary.Fail}}
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div class="summary-label">
+ERROR
+</div>
+
+<div class="summary-number error-number">
+{{.Summary.Error}}
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div class="summary-label">
+COMPLIANCE %
+</div>
+
+<div class="summary-number compliance-number">
+{{printf "%.1f" .Summary.Compliance}}%
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Group Summary -->
+
+<div class="section">
+
+<h2>Group Summary</h2>
+
+<br>
+
+<table class="group-summary">
+
+<tr>
+
+<th>Group</th>
+<th>PASS</th>
+<th>FAIL</th>
+<th>ERROR</th>
+<th>Total</th>
+
+</tr>
+
+{{range .GroupSummary}}
+
+{{if gt (add3 .Pass .Fail .Error) 0}}
+
+<tr>
+
+<td>{{.Group}}</td>
+
+<td>{{.Pass}}</td>
+
+<td>{{.Fail}}</td>
+
+<td>{{.Error}}</td>
+
+<td>{{add3 .Pass .Fail .Error}}</td>
+
+</tr>
+
+{{end}}
+
+{{end}}
+
+</table>
+
+</div>
+
+
+<!-- Detailed Findings -->
+
+<div class="section">
+
+<h2>Detailed Findings</h2>
+
+<br>
+
+<table class="findings-table">
+
+<tr>
+
+<th>ID</th>
+<th>Severity</th>
+<th>Control</th>
+<th>Status</th>
+
+</tr>
+
+{{range .Results}}
+
+<tr>
+
+<td>{{.ControlID}}</td>
+
+<td>{{.Severity}}</td>
+
+<td>
+
+{{.Title}}
+
+<details class="control-details">
+
+<summary>Details</summary>
+
+<div class="control-details-content">
+
+{{if .Rationale}}
+
+<div class="detail-row">
+
+<div class="detail-label">
+Rationale
+</div>
+
+<div class="detail-value">
+{{.Rationale}}
+</div>
+
+</div>
+
+{{end}}
+
+{{if .Remediation}}
+
+<div class="detail-row">
+
+<div class="detail-label">
+Remediation
+</div>
+
+<div class="detail-value">
+{{.Remediation}}
+</div>
+
+</div>
+
+{{end}}
+
+{{if .Reference}}
+
+<div class="detail-row">
+
+<div class="detail-label">
+References
+</div>
+
+<div class="detail-value">
+{{.Reference}}
+</div>
+
+</div>
+
+{{end}}
+
+</div>
+
+</details>
+
+</td>
+
+<td>
+
+<span class="badge status-{{lower .Status}}">
+{{.Status}}
+</span>
+
+</td>
+
+</tr>
+
+{{end}}
+
+</table>
+
+</div>
+
+
+<!-- Footer -->
+
+<div class="footer">
+
+<b>Generated by PostgreSQL CIS Scanner</b>
+
+<br><br>
+
+Benchmark :
+<b>{{.Inventory.Benchmark}}</b>
+
+&nbsp;&nbsp;|&nbsp;&nbsp;
+
+PostgreSQL :
+<b>{{.Inventory.PostgresVersion}}</b>
+
+&nbsp;&nbsp;|&nbsp;&nbsp;
+
+Platform :
+<b>{{.Inventory.Platform}}</b>
+
+<br><br>
+
+Generated :
+<b>{{.Generated}}</b>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

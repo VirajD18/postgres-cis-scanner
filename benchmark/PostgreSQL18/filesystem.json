@@ -1,0 +1,53 @@
+[
+  {
+    "id": "1.2",
+    "group": "Filesystem",
+    "title": "Ensure systemd Service Files Are Enabled",
+    "check_type": "linux",
+    "command": "systemctl is-enabled postgresql",
+    "expected": "enabled",
+    "validation": "contains",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed"
+    ],
+    "rationale": "The PostgreSQL service should be managed by systemd to ensure consistent startup, shutdown, and service management.",
+    "remediation": "Enable the PostgreSQL service using 'systemctl enable postgresql' or the appropriate service name for your distribution.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 1.2",
+    "enabled": true
+  },
+  {
+    "id": "1.3",
+    "group": "Filesystem",
+    "title": "Ensure Data Cluster Initialized Successfully",
+    "check_type": "linux",
+    "command": "test -f $PGDATA/PG_VERSION && echo initialized",
+    "expected": "initialized",
+    "validation": "equals",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed"
+    ],
+    "rationale": "A valid PostgreSQL data cluster is required before the database server can operate correctly.",
+    "remediation": "Initialize the PostgreSQL cluster using initdb or the distribution-specific initialization utility before starting PostgreSQL.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 1.3",
+    "enabled": true
+  },
+  {
+    "id": "2.1",
+    "group": "Filesystem",
+    "title": "Ensure the file permissions mask is correct",
+    "check_type": "linux",
+    "command": "stat -c '%a' $PGDATA",
+    "expected": "700",
+    "validation": "equals",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed"
+    ],
+    "rationale": "Restricting permissions on the PostgreSQL data directory prevents unauthorized users from accessing database files.",
+    "remediation": "Set the PostgreSQL data directory permissions to 700 and ensure it is owned by the PostgreSQL operating system user.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 2.1",
+    "enabled": true
+  }
+]

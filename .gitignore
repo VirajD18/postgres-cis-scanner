@@ -1,0 +1,36 @@
+# Binaries
+pgcis
+*.exe
+
+# Reports
+reports/
+
+# RPM build artifacts
+rpmbuild/
+*.rpm
+*.src.rpm
+
+# Build directories
+build/
+dist/
+
+# Local configuration
+/etc/
+configs/servers.json
+
+# Credentials / secrets
+*.env
+.env
+*.key
+*.pem
+
+# OS / editor files
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Go
+*.test
+coverage.out

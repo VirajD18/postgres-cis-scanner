@@ -1,0 +1,97 @@
+[
+  {
+    "id": "7.1",
+    "group": "Replication",
+    "title": "Ensure a replication-only user is created and used for streaming replication",
+    "check_type": "sql",
+    "query": "SELECT COUNT(*) FROM pg_roles WHERE rolreplication = true AND rolsuper = false;",
+    "expected": "1",
+    "validation": "greater_or_equal",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Using a dedicated replication user instead of a superuser follows the principle of least privilege and reduces security risks.",
+    "remediation": "Create a dedicated replication role with the REPLICATION attribute and avoid using superuser accounts for streaming replication.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 7.1",
+    "enabled": true
+  },
+  {
+    "id": "7.2",
+    "group": "Replication",
+    "title": "Ensure logging of replication commands is configured",
+    "check_type": "parameter",
+    "parameter": "log_replication_commands",
+    "expected": "on",
+    "validation": "equals",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Logging replication commands provides visibility into replication activities and assists with auditing and troubleshooting.",
+    "remediation": "ALTER SYSTEM SET log_replication_commands = 'on';\nSELECT pg_reload_conf();",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 7.2",
+    "enabled": true
+  },
+  {
+    "id": "7.3",
+    "group": "Replication",
+    "title": "Ensure base backups are configured and functional",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Regular validated base backups are essential for disaster recovery and point-in-time recovery.",
+    "remediation": "Verify that scheduled base backups complete successfully and periodically perform restore tests to validate backup integrity.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 7.3",
+    "enabled": true
+  },
+  {
+    "id": "7.4",
+    "group": "Replication",
+    "title": "Ensure WAL archiving is configured and functional",
+    "check_type": "parameter",
+    "parameter": "archive_mode",
+    "expected": "on",
+    "validation": "equals",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed"
+    ],
+    "rationale": "Write-Ahead Log (WAL) archiving enables point-in-time recovery and protects against data loss.",
+    "remediation": "Enable archive_mode, configure archive_command, and verify that archived WAL files are being generated successfully.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 7.4",
+    "enabled": true
+  },
+  {
+    "id": "7.5",
+    "group": "Replication",
+    "title": "Ensure streaming replication parameters are configured correctly",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Replication settings should be reviewed to ensure they meet availability, performance, and recovery objectives.",
+    "remediation": "Review parameters such as wal_level, max_wal_senders, max_replication_slots, hot_standby, and synchronous_commit according to your replication architecture.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 7.5",
+    "enabled": true
+  }
+]

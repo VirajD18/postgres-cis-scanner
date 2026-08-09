@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>PostgreSQL CIS Dashboard</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#eef2f7;
+    padding:40px;
+}
+
+h1{
+    color:#143d6b;
+    margin-bottom:30px;
+}
+
+table{
+    width:100%;
+    background:white;
+    border-collapse:collapse;
+}
+
+th{
+    background:#143d6b;
+    color:white;
+    padding:12px;
+}
+
+td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+}
+
+tr:hover{
+    background:#f7f7f7;
+}
+
+a{
+    color:#1565c0;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>PostgreSQL CIS Dashboard</h1>
+
+<table>
+
+<tr>
+
+<th>Server</th>
+<th>Version</th>
+<th>Platform</th>
+<th>Compliance</th>
+<th>PASS</th>
+<th>FAIL</th>
+<th>MANUAL</th>
+<th>INFO</th>
+<th>Last Scan</th>
+<th>Report</th>
+
+</tr>
+
+{{range .}}
+
+<tr>
+
+<td>{{.Name}}</td>
+<td>{{.Version}}</td>
+<td>{{.Platform}}</td>
+<td>{{printf "%.1f" .Compliance}}%</td>
+<td>{{.Pass}}</td>
+<td>{{.Fail}}</td>
+<td>{{.Manual}}</td>
+<td>{{.Info}}</td>
+<td>{{.LastScan}}</td>
+
+<td>
+
+<a href="{{.ReportPath}}">
+
+Open Report
+
+</a>
+
+</td>
+
+</tr>
+
+{{end}}
+
+</table>
+
+</body>
+
+</html>

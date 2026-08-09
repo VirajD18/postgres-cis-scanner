@@ -1,0 +1,42 @@
+[
+  {
+    "id": "3.2",
+    "group": "Extensions",
+    "title": "Ensure the PostgreSQL Audit Extension (pgAudit) is enabled",
+    "check_type": "extension",
+    "extension": "pgaudit",
+    "expected": "true",
+    "validation": "equals",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "The pgAudit extension provides detailed session and object audit logging, improving accountability and supporting security investigations.",
+    "remediation": "Install the pgAudit extension, add it to shared_preload_libraries if required, restart PostgreSQL, then execute CREATE EXTENSION pgaudit;.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 3.2",
+    "enabled": true
+  },
+  {
+    "id": "6.9",
+    "group": "Extensions",
+    "title": "Ensure the pgcrypto extension is installed and configured correctly",
+    "check_type": "extension",
+    "extension": "pgcrypto",
+    "expected": "true",
+    "validation": "equals",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "The pgcrypto extension provides cryptographic functions for securely storing and processing sensitive information.",
+    "remediation": "Install the pgcrypto extension by executing CREATE EXTENSION pgcrypto; if it is available in the PostgreSQL installation.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.9",
+    "enabled": true
+  }
+]

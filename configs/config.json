@@ -1,0 +1,11 @@
+{
+    "host": "localhost",
+    "port": 5432,
+    "database": "postgres",
+    "user": "postgres",
+    "password": "ChangeME",
+    "sslmode": "disable",
+    "benchmark": "postgres18",
+    "output": "html",
+    "report_directory": "./output"
+}
