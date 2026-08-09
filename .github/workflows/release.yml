@@ -1,0 +1,53 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build
+        run: |
+          go build -o pgcis ./cmd/pgcis
+
+      - name: Get next version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+
+          if [ -z "$latest" ]; then
+            version="v1.0.0"
+          else
+            number=$(echo "$latest" | sed 's/^v1\.0\.//')
+            number=$((number + 1))
+            version="v1.0.$number"
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Creating release: $version"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.version }}" \
+            ./pgcis \
+            --title "PGCIS ${{ steps.version.outputs.version }}" \
+            --generate-notes
