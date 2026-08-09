@@ -16,7 +16,6 @@ dist/
 
 # Local configuration
 /etc/
-configs/servers.json
 
 # Credentials / secrets
 *.env

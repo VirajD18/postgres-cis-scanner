@@ -1,0 +1,43 @@
+[
+  {
+    "name": "Local PostgreSQL",
+    "host": "localhost",
+    "port": 5432,
+    "database": "postgres",
+    "user": "postgres",
+    "password": "CHANGE_ME",
+    "sslmode": "disable",
+    "type": "iaas",
+    "control_template": "configs/templates/iaas.json",
+    "ha_hosts": [],
+    "dr_host": ""
+  },
+  {
+    "name": "Production PASS Example",
+    "host": "postgres-pass.example.com",
+    "port": 5432,
+    "database": "postgres",
+    "user": "pgcis_scanner",
+    "password": "CHANGE_ME",
+    "sslmode": "require",
+    "type": "pass",
+    "control_template": "configs/templates/pass.json",
+    "ha_hosts": [
+      "postgres-replica.example.com"
+    ],
+    "dr_host": "postgres-dr.example.com"
+  },
+  {
+    "name": "Production IaaS Example",
+    "host": "postgres-iaas.example.com",
+    "port": 5432,
+    "database": "postgres",
+    "user": "pgcis_scanner",
+    "password": "CHANGE_ME",
+    "sslmode": "require",
+    "type": "iaas",
+    "control_template": "configs/templates/iaas.json",
+    "ha_hosts": [],
+    "dr_host": ""
+  }
+]
