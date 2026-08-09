@@ -21,31 +21,6 @@ jobs:
         with:
           go-version: '1.24'
 
-      - name: Install RPM build tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm
-
-      - name: Build PostgreSQL CIS Scanner
-        run: |
-          go build -o pgcis ./cmd/pgcis
-
-      - name: Prepare RPM sources
-        run: |
-          mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-
-          cp pgcis ~/rpmbuild/SOURCES/pgcis
-          cp configs/servers.json ~/rpmbuild/SOURCES/servers.json
-          cp configs/README.txt ~/rpmbuild/SOURCES/README.txt
-          cp configs/templates/iaas.json ~/rpmbuild/SOURCES/iaas.json
-          cp configs/templates/pass.json ~/rpmbuild/SOURCES/pass.json
-          cp -r benchmark ~/rpmbuild/SOURCES/benchmark
-          cp packaging/pgcis.spec ~/rpmbuild/SPECS/pgcis.spec
-
-      - name: Build RPM
-        run: |
-          rpmbuild -ba ~/rpmbuild/SPECS/pgcis.spec
-
       - name: Get next version
         id: version
         env:
@@ -61,14 +36,54 @@ jobs:
             version="v1.0.$number"
           fi
 
+          rpm_version="${version#v}"
+
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "Creating release: $version"
+          echo "rpm_version=$rpm_version" >> "$GITHUB_OUTPUT"
+
+          echo "GitHub Release: $version"
+          echo "RPM Version: $rpm_version"
+
+      - name: Build PostgreSQL CIS Scanner
+        run: |
+          go build -o pgcis ./cmd/pgcis
+
+      - name: Install RPM build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+
+      - name: Prepare RPM sources
+        run: |
+          mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+
+          cp pgcis ~/rpmbuild/SOURCES/pgcis
+          cp configs/servers.json ~/rpmbuild/SOURCES/servers.json
+          cp configs/README.txt ~/rpmbuild/SOURCES/README.txt
+          cp configs/templates/iaas.json ~/rpmbuild/SOURCES/iaas.json
+          cp configs/templates/pass.json ~/rpmbuild/SOURCES/pass.json
+          cp -r benchmark ~/rpmbuild/SOURCES/benchmark
+          cp packaging/pgcis.spec ~/rpmbuild/SPECS/pgcis.spec
+
+      - name: Set RPM version
+        run: |
+          sed -i "s/^Version:.*/Version:        ${{ steps.version.outputs.rpm_version }}/" \
+            ~/rpmbuild/SPECS/pgcis.spec
+
+          echo "RPM spec version:"
+          grep '^Version:' ~/rpmbuild/SPECS/pgcis.spec
+
+      - name: Build RPM
+        run: |
+          rpmbuild -ba ~/rpmbuild/SPECS/pgcis.spec
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           RPM=$(find ~/rpmbuild/RPMS -name '*.rpm' | head -1)
+
+          echo "RPM: $RPM"
 
           gh release create "${{ steps.version.outputs.version }}" \
             ./pgcis \
