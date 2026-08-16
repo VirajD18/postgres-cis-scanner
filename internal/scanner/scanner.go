@@ -9,6 +9,7 @@ import (
 	"github.com/VirajD18/postgres-cis-scanner/internal/benchmark"
 	"github.com/VirajD18/postgres-cis-scanner/internal/benchmarkpath"
 	"github.com/VirajD18/postgres-cis-scanner/internal/charts"
+	"github.com/VirajD18/postgres-cis-scanner/internal/controltemplatepath"
 	"github.com/VirajD18/postgres-cis-scanner/internal/dashboard"
 	"github.com/VirajD18/postgres-cis-scanner/internal/database"
 	"github.com/VirajD18/postgres-cis-scanner/internal/engine"
@@ -64,7 +65,8 @@ func Scan(server models.Server) (dashboard.ServerReport, error) {
 	// Apply server-specific control template for IaaS servers
 	if server.ControlTemplate != "" {
 
-		allowed, err := servers.LoadControlTemplate(server.ControlTemplate)
+		controlTemplatePath := controltemplatepath.Resolve(server.ControlTemplate)
+		allowed, err := servers.LoadControlTemplate(controlTemplatePath)
 		if err != nil {
 			return dashboard.ServerReport{}, err
 		}
