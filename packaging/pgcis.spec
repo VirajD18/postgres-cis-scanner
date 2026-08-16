@@ -19,6 +19,7 @@ mkdir -p %{buildroot}/etc/pgcis
 mkdir -p %{buildroot}/usr/share/pgcis/benchmark
 mkdir -p %{buildroot}/var/lib/pgcis/reports
 mkdir -p %{buildroot}/etc/pgcis/templates
+mkdir -p %{buildroot}/usr/share/pgcis/templates
 
 install -m 0755 %{_sourcedir}/pgcis \
     %{buildroot}/usr/bin/pgcis
@@ -38,6 +39,10 @@ install -m 0644 %{_sourcedir}/pass.json \
 cp -r %{_sourcedir}/benchmark/* \
     %{buildroot}/usr/share/pgcis/benchmark/
 
+cp -r %{_sourcedir}/templates/* \
+    %{buildroot}/usr/share/pgcis/templates/
+
+
 %files
 /usr/bin/pgcis
 %config(noreplace) /etc/pgcis/servers.json
@@ -46,6 +51,7 @@ cp -r %{_sourcedir}/benchmark/* \
 %config(noreplace) /etc/pgcis/templates/pass.json
 /usr/share/pgcis/benchmark
 /var/lib/pgcis/reports
+/usr/share/pgcis/templates
 
 %changelog
 * Sun Aug 09 2026 Viraj Deshmukh - 1.0.0-1

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/VirajD18/postgres-cis-scanner/internal/models"
+	"github.com/VirajD18/postgres-cis-scanner/internal/templatepath"
 )
 
 type HTMLReport struct {
@@ -159,7 +160,7 @@ func SaveHTML(
 
 	tmpl, err := template.New("report.html").
 		Funcs(funcMap).
-		ParseFiles("templates/report.html")
+		ParseFiles(templatepath.Resolve("report.html"))
 
 	if err != nil {
 		return err

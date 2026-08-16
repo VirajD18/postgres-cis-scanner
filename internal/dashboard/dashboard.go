@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+
+	"github.com/VirajD18/postgres-cis-scanner/internal/templatepath"
 )
 
 type ServerReport struct {
@@ -21,7 +23,7 @@ type ServerReport struct {
 
 func Generate(reports []ServerReport) error {
 
-	tmpl, err := template.ParseFiles("templates/index.html")
+	tmpl, err := template.ParseFiles(templatepath.Resolve("index.html"),)
 	if err != nil {
 		return err
 	}
