@@ -64,6 +64,13 @@ jobs:
           cp configs/templates/pass.json ~/rpmbuild/SOURCES/pass.json
           cp -r benchmark ~/rpmbuild/SOURCES/benchmark
           cp packaging/pgcis.spec ~/rpmbuild/SPECS/pgcis.spec
+          cp -r templates ~/rpmbuild/SOURCES/templates
+
+          echo "=== Repository templates ==="
+          find templates -maxdepth 2 -type f -print
+
+          echo "=== RPM source templates ==="
+          find ~/rpmbuild/SOURCES/templates -maxdepth 2 -type f -print
 
       - name: Set RPM version
         run: |
