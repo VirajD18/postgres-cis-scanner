@@ -9,21 +9,21 @@ import (
 )
 
 type ServerReport struct {
-	Name         string
-	Version      string
-	Platform     string
-	Compliance   float64
-	Pass         int
-	Fail         int
-	Manual       int
-	Info         int
-	LastScan     string
-	ReportPath   string
+	Name       string
+	Version    string
+	Platform   string
+	Compliance float64
+	Pass       int
+	Fail       int
+	Manual     int
+	Info       int
+	LastScan   string
+	ReportPath string
 }
 
 func Generate(reports []ServerReport) error {
 
-	tmpl, err := template.ParseFiles(templatepath.Resolve("index.html"),)
+	tmpl, err := template.ParseFiles(templatepath.Resolve("index.html"))
 	if err != nil {
 		return err
 	}

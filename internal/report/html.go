@@ -16,10 +16,9 @@ type HTMLReport struct {
 	Summary   models.Summary
 	Inventory *models.Inventory
 
-	Results      []HTMLResult
+	Results       []HTMLResult
 	FailedResults []HTMLResult
 	GroupSummary  []GroupSummary
-
 }
 
 type HTMLResult struct {

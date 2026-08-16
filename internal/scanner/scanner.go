@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/VirajD18/postgres-cis-scanner/internal/benchmark"
+	"github.com/VirajD18/postgres-cis-scanner/internal/benchmarkpath"
 	"github.com/VirajD18/postgres-cis-scanner/internal/charts"
 	"github.com/VirajD18/postgres-cis-scanner/internal/dashboard"
 	"github.com/VirajD18/postgres-cis-scanner/internal/database"
@@ -43,14 +44,13 @@ func Scan(server models.Server) (dashboard.ServerReport, error) {
 	// Determine PostgreSQL major version
 	major := strings.Split(inv.PostgresVersion, ".")[0]
 
-	benchmarkDir := filepath.Join(
-		"benchmark",
-		"postgres"+major,
+	benchmarkDir := benchmarkpath.Resolve(
+		"PostgreSQL" + major,
 	)
 
 	// Fallback if benchmark directory doesn't exist
 	if _, err := os.Stat(benchmarkDir); os.IsNotExist(err) {
-		benchmarkDir = filepath.Join("benchmark", "PostgreSQL18")
+		benchmarkDir = benchmarkpath.Resolve("PostgreSQL18")
 	}
 
 	// Store benchmark used
