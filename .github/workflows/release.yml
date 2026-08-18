@@ -28,21 +28,22 @@ jobs:
         run: |
           latest=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
 
-          if [ -z "$latest" ]; then
-            version="v2.0.0"
-          else
-            number=$(echo "$latest" | sed 's/^v1\.0\.//')
+          if [[ "$latest" =~ ^v2\.0\.([0-9]+)$ ]]; then
+            number="${BASH_REMATCH[1]}"
             number=$((number + 1))
             version="v2.0.$number"
+          else
+            version="v2.0.0"
           fi
 
           rpm_version="${version#v}"
 
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "rpm_version=$rpm_version" >> "$GITHUB_OUTPUT"
-
+          echo "Latest Release: ${latest:-none}"
           echo "GitHub Release: $version"
           echo "RPM Version: $rpm_version"
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "rpm_version=$rpm_version" >> "$GITHUB_OUTPUT"
 
       - name: Build PostgreSQL CIS Scanner
         run: |
