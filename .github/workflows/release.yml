@@ -33,7 +33,7 @@ jobs:
           else
             number=$(echo "$latest" | sed 's/^v1\.0\.//')
             number=$((number + 1))
-            version="v1.0.$number"
+            version="v2.0.$number"
           fi
 
           rpm_version="${version#v}"

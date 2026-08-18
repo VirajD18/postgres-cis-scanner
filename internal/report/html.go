@@ -149,6 +149,20 @@ func SaveHTML(
 
 	funcMap := template.FuncMap{
 		"lower": strings.ToLower,
+		"displayPlatform": func(platform string) string {
+			switch platform {
+			case "self-managed":
+				return "Self-Managed"
+			case "rds":
+				return "RDS"
+			case "aurora":
+				return "Aurora"
+			case "azure-flex":
+				return "Azure-Flexible"
+			default:
+				return platform
+			}
+		},
 		"add": func(a, b int) int {
 			return a + b
 		},

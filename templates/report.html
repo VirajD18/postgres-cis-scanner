@@ -453,7 +453,7 @@ Security Compliance Assessment
 </td>
 
 <td>Platform</td>
-<td>{{.Inventory.Platform}}</td>
+<td>{{displayPlatform .Inventory.Platform}}</td>
 
 </tr>
 
@@ -462,7 +462,7 @@ Security Compliance Assessment
 <tr>
 
 <td>Platform</td>
-<td>{{.Inventory.Platform}}</td>
+<td>{{displayPlatform .Inventory.Platform}}</td>
 
 <td>Benchmark</td>
 <td>{{.Inventory.Benchmark}}</td>
@@ -779,7 +779,7 @@ PostgreSQL :
 &nbsp;&nbsp;|&nbsp;&nbsp;
 
 Platform :
-<b>{{.Inventory.Platform}}</b>
+<b>{{displayPlatform .Inventory.Platform}}</b>
 
 <br><br>
 
