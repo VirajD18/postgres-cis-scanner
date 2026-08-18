@@ -62,11 +62,15 @@ func Scan(server models.Server) (dashboard.ServerReport, error) {
 		return dashboard.ServerReport{}, err
 	}
 
-	// Apply server-specific control template for IaaS servers
+	// Track controls explicitly selected by the server template.
+	// Explicitly selected controls override platform restrictions.
+	var allowed map[string]bool
+
 	if server.ControlTemplate != "" {
 
 		controlTemplatePath := controltemplatepath.Resolve(server.ControlTemplate)
-		allowed, err := servers.LoadControlTemplate(controlTemplatePath)
+
+		allowed, err = servers.LoadControlTemplate(controlTemplatePath)
 		if err != nil {
 			return dashboard.ServerReport{}, err
 		}
@@ -86,7 +90,20 @@ func Scan(server models.Server) (dashboard.ServerReport, error) {
 
 	for _, control := range controls {
 
-		// Skip controls that don't apply to this platform
+		// If the control was explicitly selected in the server's
+		// control template, always execute it regardless of platform.
+		if allowed != nil && allowed[control.ID] {
+			r, err := engine.Execute(conn, control)
+			if err != nil {
+				continue
+			}
+
+			results = append(results, *r)
+			continue
+		}
+
+		// For controls not explicitly selected by a template,
+		// apply platform restrictions.
 		if !platform.Supported(control, inv) {
 
 			results = append(results, models.Result{
