@@ -6,10 +6,10 @@ Supported values:
 
 | Type | Platform | Managed Service |
 |------|----------|-----------------|
-| `iaas` | `self-managed` | No |
-| `rds` | `rds` | Yes |
-| `aurora` | `aurora` | Yes |
-| `azure-flex` | `azure-flex` | Yes |
+| `iaas` | `Self-Managed` | No |
+| `rds` | `RDS` | Yes |
+| `aurora` | `Aurora` | Yes |
+| `azure-flex` | `Azure-Flexible` | Yes |
 
 ### `iaas`
 
