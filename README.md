@@ -1,204 +1,130 @@
-# PostgreSQL CIS Scanner
-
-A Go-based PostgreSQL CIS Benchmark security scanner for auditing PostgreSQL servers against security controls.
-
-## Features
-
-- PostgreSQL CIS Benchmark scanning
-- PostgreSQL 18 support
-- Multiple PostgreSQL server scanning
-- IaaS and PASS environment support
-- Custom CIS control templates
-- HTML reports
-- JSON results
-- HA and DR server configuration
-- RHEL 9 RPM package
-
-## Installation
-
-Install the RPM:
-
-```bash
-rpm -ivh pgcis-1.0.0-1.el9.x86_64.rpm
-```
-
-Verify installation:
-
-```bash
-rpm -q pgcis
-```
-
-## Configuration
-
-The main configuration file is:
-
-`/etc/pgcis/servers.json`
-
-Example:
-
-```json
-[
-  {
-    "name": "Production PostgreSQL",
-    "host": "postgres.example.com",
-    "port": 5432,
-    "database": "postgres",
-    "user": "pgcis_scanner",
-    "password": "CHANGE_ME",
-    "sslmode": "require",
-    "type": "iaas",
-    "control_template": "/etc/pgcis/templates/iaas.json",
-    "ha_hosts": [],
-    "dr_host": ""
-  }
-]
-```
-
 ## Server Types
 
-### IaaS
+The `type` field in `servers.json` defines the PostgreSQL deployment platform.
 
-```json
-"type": "iaas",
-"control_template": "/etc/pgcis/templates/iaas.json"
-```
+Supported values:
 
-### PASS
+| Type | Platform | Managed Service |
+|------|----------|-----------------|
+| `iaas` | `self-managed` | No |
+| `rds` | `rds` | Yes |
+| `aurora` | `aurora` | Yes |
+| `azure-flex` | `azure-flex` | Yes |
 
-```json
-"type": "pass",
-"control_template": "/etc/pgcis/templates/pass.json"
-```
+### `iaas`
 
-## Control Templates
+Use for PostgreSQL running on your own infrastructure, such as:
 
-Templates define which CIS controls should be scanned.
-
-IaaS template:
-
-`/etc/pgcis/templates/iaas.json`
-
-PASS template:
-
-`/etc/pgcis/templates/pass.json`
+- RHEL/Linux servers
+- AWS EC2
+- Azure VMs
+- VMware
+- Bare-metal servers
 
 Example:
 
 ```json
 {
-  "controls": [
-    "3.1.2",
-    "3.1.3",
-    "3.1.20",
-    "6.8",
-    "6.8.1"
-  ]
+  "name": "Production PostgreSQL",
+  "host": "postgres.example.com",
+  "port": 5432,
+  "database": "postgres",
+  "user": "postgres",
+  "password": "CHANGE_ME",
+  "sslmode": "require",
+  "type": "iaas",
+  "control_template": "configs/templates/iaas.json",
+  "ha_hosts": [],
+  "dr_host": ""
 }
 ```
 
-Only the Control IDs listed in the template are scanned.
+### `rds`
 
-### Custom Template
+Use for Amazon RDS for PostgreSQL.
 
-Create your own template, for example:
+```json
+"type": "rds"
+```
 
-`/etc/pgcis/templates/custom.json`
+### `aurora`
+
+Use for Amazon Aurora PostgreSQL.
+
+```json
+"type": "aurora"
+```
 
 Example:
 
 ```json
 {
-  "controls": [
-    "3.1.2",
-    "6.8",
-    "7.4"
-  ]
+  "name": "Production Aurora",
+  "host": "aurora-endpoint.amazonaws.com",
+  "port": 5432,
+  "database": "postgres",
+  "user": "postgres",
+  "password": "CHANGE_ME",
+  "sslmode": "require",
+  "type": "aurora",
+  "control_template": "configs/templates/pass.json",
+  "ha_hosts": [
+    "aurora-read-replica.amazonaws.com"
+  ],
+  "dr_host": "aurora-dr-endpoint.amazonaws.com"
 }
 ```
 
-Reference it from `servers.json`:
+### `azure-flex`
+
+Use for Azure Database for PostgreSQL Flexible Server.
 
 ```json
-"control_template": "/etc/pgcis/templates/custom.json"
+"type": "azure-flex"
 ```
 
-If `control_template` is not specified, all available CIS controls are scanned.
+### Control Templates
 
-## Running the Scanner
+The `control_template` field determines which set of CIS controls is applied to the server.
 
-Run:
-
-```bash
-pgcis
-```
-
-The scanner will:
-
-1. Load configured PostgreSQL servers.
-2. Connect to each server.
-3. Detect the PostgreSQL version.
-4. Load the appropriate CIS benchmark.
-5. Apply the configured control template.
-6. Execute the selected controls.
-7. Generate reports.
-
-## Reports
-
-Reports are generated separately for each server.
-
-Report location:
-
-`/var/lib/pgcis/reports/`
-
-Each server has its own report directory containing the generated reports.
-
-## Development
-
-Build:
-
-```bash
-go build ./...
-```
-
-Run directly:
-
-```bash
-go run ./cmd/pgcis
-```
-
-## Security
-
-Do not commit real PostgreSQL passwords, credentials, API keys, certificates, or production connection details to GitHub.
-
-Use `CHANGE_ME` for example credentials.
-
-## Project Structure
+Available templates:
 
 ```text
-postgres-cis-scanner/
-├── benchmark/
-│   └── PostgreSQL18/
-├── configs/
-│   ├── templates/
-│   │   ├── iaas.json
-│   │   └── pass.json
-│   └── README.txt
-├── internal/
-│   ├── benchmark/
-│   ├── charts/
-│   ├── database/
-│   ├── engine/
-│   ├── inventory/
-│   ├── models/
-│   ├── report/
-│   ├── scanner/
-│   └── servers/
-├── templates/
-├── go.mod
-├── go.sum
-└── README.md
+configs/templates/iaas.json
+configs/templates/pass.json
 ```
 
-## License
+For RPM installations, these are automatically resolved from:
 
-Proprietary
+```text
+/etc/pgcis/templates/
+```
+
+You can keep the same `control_template` value in `servers.json` for both source and RPM installations.
+
+### Important
+
+Use the correct `type` because it affects:
+
+- Platform shown in the report
+- Managed Service status
+- Platform-specific CIS controls
+- Control applicability
+
+For example, an Aurora PostgreSQL server should use:
+
+```json
+"type": "aurora"
+```
+
+and not:
+
+```json
+"type": "iaas"
+```
+
+or:
+
+```json
+"type": "pass"
+```
