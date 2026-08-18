@@ -12,7 +12,7 @@ type Control struct {
 	Extension     string   `json:"extension,omitempty"`
 	Command       string   `json:"command,omitempty"`
 
-	Expected      string   `json:"expected"`
+	Expected string `json:"expected"`
 	Validation    string   `json:"validation"`
 
 	Severity      string   `json:"severity"`

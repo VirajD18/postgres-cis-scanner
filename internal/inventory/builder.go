@@ -34,8 +34,29 @@ func Build(conn *pgx.Conn, cfg *models.Config, server models.Server) (*models.In
 		return nil, err
 	}
 
-	inv.Platform = platform
-	inv.ManagedService = managed
+	// Respect explicitly configured platform type.
+	switch server.Type {
+	case "iaas":
+		inv.Platform = "self-managed"
+		inv.ManagedService = false
+
+	case "rds":
+		inv.Platform = "rds"
+		inv.ManagedService = true
+
+	case "aurora":
+		inv.Platform = "aurora"
+		inv.ManagedService = true
+
+	case "azure-flex":
+		inv.Platform = "azure-flex"
+		inv.ManagedService = true
+
+	default:
+		// Fall back to database-side detection.
+		inv.Platform = platform
+		inv.ManagedService = managed
+	}
 
 	extensions, err := detectExtensions(conn)
 	if err != nil {

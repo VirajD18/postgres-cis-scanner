@@ -6,6 +6,21 @@ import (
 	"github.com/VirajD18/postgres-cis-scanner/internal/models"
 )
 
+func DisplayPlatform(platform string) string {
+	switch platform {
+	case "self-managed":
+		return "Self-Managed"
+	case "rds":
+		return "RDS"
+	case "aurora":
+		return "Aurora"
+	case "azure-flex":
+		return "Azure-Flexible"
+	default:
+		return platform
+	}
+}
+
 func Build(
 	inv *models.Inventory,
 	summary models.Summary,
@@ -15,7 +30,7 @@ func Build(
 	return ServerReport{
 		Name:       serverName,
 		Version:    inv.PostgresVersion,
-		Platform:   inv.Platform,
+		Platform:   DisplayPlatform(inv.Platform),
 		Compliance: summary.Compliance,
 		Pass:       summary.Pass,
 		Fail:       summary.Fail,
