@@ -33,7 +33,7 @@ jobs:
             number=$((number + 1))
             version="v2.0.$number"
           else
-            version="v2.0.0"
+          version="v3.0.0"
           fi
 
           rpm_version="${version#v}"
