@@ -1,0 +1,97 @@
+[
+  {
+    "id": "6.2",
+    "group": "Runtime",
+    "title": "Ensure backend runtime parameters are configured correctly",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Backend runtime parameters influence PostgreSQL performance, stability, and security. They should be reviewed to ensure they meet organizational requirements.",
+    "remediation": "Review backend runtime parameters such as work_mem, maintenance_work_mem, shared_buffers, effective_cache_size, and other runtime settings according to workload requirements.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.2",
+    "enabled": true
+  },
+  {
+    "id": "6.3",
+    "group": "Runtime",
+    "title": "Ensure Postmaster runtime parameters are configured",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Postmaster parameters affect server startup and overall database behavior. They should be configured according to security and operational requirements.",
+    "remediation": "Review startup parameters including max_connections, superuser_reserved_connections, shared_preload_libraries, and related postmaster settings.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.3",
+    "enabled": true
+  },
+  {
+    "id": "6.4",
+    "group": "Runtime",
+    "title": "Ensure SIGHUP runtime parameters are configured",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "LOW",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "SIGHUP parameters can be reloaded without restarting PostgreSQL and should be reviewed to maintain secure and reliable operation.",
+    "remediation": "Review reloadable configuration parameters and ensure they align with organizational standards.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.4",
+    "enabled": true
+  },
+  {
+    "id": "6.5",
+    "group": "Runtime",
+    "title": "Ensure Superuser runtime parameters are configured",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Runtime parameters that require superuser privileges should be reviewed carefully to prevent insecure or unsupported configurations.",
+    "remediation": "Review all superuser-controlled runtime parameters and ensure they comply with organizational security policies.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.5",
+    "enabled": true
+  },
+  {
+    "id": "6.6",
+    "group": "Runtime",
+    "title": "Ensure User runtime parameters are configured",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "LOW",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "User-configurable runtime parameters should be reviewed to ensure they do not weaken security or impact database performance.",
+    "remediation": "Review role- and session-level runtime parameters assigned through ALTER ROLE and ALTER DATABASE statements.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.6",
+    "enabled": true
+  }
+]

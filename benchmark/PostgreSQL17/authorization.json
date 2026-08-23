@@ -1,0 +1,116 @@
+[
+  {
+    "id": "4.2",
+    "group": "Authorization",
+    "title": "Ensure excessive administrative privileges are revoked",
+    "check_type": "sql",
+    "query": "SELECT COUNT(*) FROM pg_roles WHERE rolsuper = true;",
+    "expected": "1",
+    "validation": "less_or_equal",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Only authorized database administrators should possess superuser privileges. Excessive administrative privileges increase the impact of compromised accounts.",
+    "remediation": "Review all PostgreSQL superuser roles and revoke unnecessary SUPERUSER privileges using ALTER ROLE.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 4.2",
+    "enabled": true
+  },
+  {
+    "id": "4.3",
+    "group": "Authorization",
+    "title": "Ensure excessive function privileges are revoked",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Functions capable of executing privileged operations should only be executable by authorized roles.",
+    "remediation": "Review EXECUTE privileges on user-defined functions and revoke unnecessary permissions using REVOKE EXECUTE.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 4.3",
+    "enabled": true
+  },
+  {
+    "id": "4.4",
+    "group": "Authorization",
+    "title": "Ensure excessive DML privileges are revoked",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Data modification privileges should be granted only to roles that require them.",
+    "remediation": "Review INSERT, UPDATE, DELETE and TRUNCATE privileges on all application objects and revoke unnecessary access.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 4.4",
+    "enabled": true
+  },
+  {
+    "id": "4.5",
+    "group": "Authorization",
+    "title": "Ensure Row Level Security (RLS) is configured correctly",
+    "check_type": "sql",
+    "query": "SELECT COUNT(*) FROM pg_class WHERE relrowsecurity = true;",
+    "expected": "0",
+    "validation": "greater_or_equal",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Row Level Security restricts access to individual rows based on security policies.",
+    "remediation": "Enable Row Level Security on tables that require row-based access control using ALTER TABLE ... ENABLE ROW LEVEL SECURITY.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 4.5",
+    "enabled": true
+  },
+  {
+    "id": "4.6",
+    "group": "Authorization",
+    "title": "Ensure the set_user extension is installed",
+    "check_type": "extension",
+    "extension": "set_user",
+    "expected": "true",
+    "validation": "equals",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed"
+    ],
+    "rationale": "The set_user extension provides controlled privilege escalation for administrative operations.",
+    "remediation": "Install the set_user extension and configure it according to organizational security requirements.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 4.6",
+    "enabled": true
+  },
+  {
+    "id": "4.7",
+    "group": "Authorization",
+    "title": "Make use of predefined roles",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "LOW",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Using PostgreSQL predefined roles simplifies privilege management and reduces administrative errors.",
+    "remediation": "Review role assignments and use PostgreSQL predefined roles wherever applicable instead of granting individual privileges.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 4.7",
+    "enabled": true
+  }
+]

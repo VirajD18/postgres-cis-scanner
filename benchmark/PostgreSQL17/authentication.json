@@ -1,0 +1,55 @@
+[
+  {
+    "id": "5.1",
+    "group": "Authentication",
+    "title": "Ensure login via local UNIX Domain Socket is configured correctly",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "HIGH",
+    "platforms": ["self-managed"],
+    "rationale": "Restrict local socket authentication to trusted users and use secure authentication methods.",
+    "remediation": "Review pg_hba.conf and ensure local connections use secure authentication methods such as scram-sha-256. Remove any unnecessary trust authentication.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 5.1",
+    "enabled": true
+  },
+  {
+    "id": "5.2",
+    "group": "Authentication",
+    "title": "Ensure login via host TCP/IP Socket is configured correctly",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Restrict network authentication to authorized hosts using secure authentication mechanisms.",
+    "remediation": "Review pg_hba.conf (or cloud parameter configuration) and ensure only trusted networks are allowed. Use scram-sha-256 authentication whenever possible.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 5.2",
+    "enabled": true
+  },
+  {
+    "id": "5.3",
+    "group": "Authentication",
+    "title": "Ensure Password Complexity is configured",
+    "check_type": "parameter",
+    "parameter": "password_encryption",
+    "expected": "scram-sha-256",
+    "validation": "equals",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "SCRAM-SHA-256 provides stronger password security than MD5 and protects against modern password attacks.",
+    "remediation": "ALTER SYSTEM SET password_encryption = 'scram-sha-256';\nSELECT pg_reload_conf();",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 5.3",
+    "enabled": true
+  }
+]

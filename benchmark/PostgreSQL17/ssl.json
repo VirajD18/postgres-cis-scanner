@@ -1,0 +1,101 @@
+[
+  {
+    "id": "6.7",
+    "group": "SSL",
+    "title": "Ensure FIPS 140-2 OpenSSL Cryptography Is Used",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "FIPS 140-2 validated cryptographic modules help organizations meet regulatory and security compliance requirements.",
+    "remediation": "Verify that PostgreSQL is linked against a FIPS-enabled OpenSSL library and that FIPS mode is enabled where required by organizational policy.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.7",
+    "enabled": true
+  },
+  {
+    "id": "6.8",
+    "group": "SSL",
+    "title": "Ensure SSL is enabled and configured correctly",
+    "check_type": "parameter",
+    "parameter": "ssl",
+    "expected": "on",
+    "validation": "equals",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "SSL encrypts client-server communication, protecting sensitive information from interception.",
+    "remediation": "ALTER SYSTEM SET ssl = 'on';\nConfigure valid SSL certificates and restart PostgreSQL if required.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.8",
+    "enabled": true
+  },
+  {
+    "id": "6.8.1",
+    "group": "SSL",
+    "title": "Ensure ssl_min_protocol_version is configured",
+    "check_type": "parameter",
+    "parameter": "ssl_min_protocol_version",
+    "expected": "TLSv1.2",
+    "validation": "greater_or_equal",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Disabling older TLS versions prevents the use of weak cryptographic protocols.",
+    "remediation": "ALTER SYSTEM SET ssl_min_protocol_version = 'TLSv1.2';\nRestart PostgreSQL if required.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.8.1",
+    "enabled": true
+  },
+  {
+    "id": "6.8.2",
+    "group": "SSL",
+    "title": "Ensure ssl_ciphers is configured",
+    "check_type": "parameter",
+    "parameter": "ssl_ciphers",
+    "expected": "",
+    "validation": "not_empty",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Restricting SSL ciphers to strong algorithms reduces exposure to cryptographic attacks.",
+    "remediation": "Configure ssl_ciphers to allow only strong cipher suites recommended by your organization's security policy.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.8.2",
+    "enabled": true
+  },
+  {
+    "id": "6.8.3",
+    "group": "SSL",
+    "title": "Ensure ssl_prefer_server_ciphers is enabled",
+    "check_type": "parameter",
+    "parameter": "ssl_prefer_server_ciphers",
+    "expected": "on",
+    "validation": "equals",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Allowing the server to select the cipher suite ensures stronger cryptographic algorithms are preferred.",
+    "remediation": "ALTER SYSTEM SET ssl_prefer_server_ciphers = 'on';\nRestart PostgreSQL if required.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 6.8.3",
+    "enabled": true
+  }
+]

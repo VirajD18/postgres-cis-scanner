@@ -1,0 +1,54 @@
+[
+  {
+    "id": "8.1",
+    "group": "Backup",
+    "title": "Ensure PostgreSQL subdirectory locations are outside the data cluster",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed"
+    ],
+    "rationale": "Separating WAL, backup, and archive directories from the primary data directory improves resilience, simplifies recovery, and reduces the risk of data loss due to a single storage failure.",
+    "remediation": "Review the PostgreSQL directory layout and ensure WAL archives, backups, and other supporting directories reside on separate storage from the main data directory where practical.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 8.1",
+    "enabled": true
+  },
+  {
+    "id": "8.2",
+    "group": "Backup",
+    "title": "Ensure the backup and restore tool, pgBackRest, is installed and configured",
+    "check_type": "command",
+    "command": "pgbackrest version",
+    "expected": "pgBackRest",
+    "validation": "contains",
+    "severity": "HIGH",
+    "platforms": [
+      "self-managed"
+    ],
+    "rationale": "A reliable backup solution is essential for disaster recovery and point-in-time recovery operations.",
+    "remediation": "Install pgBackRest, configure a repository, validate scheduled backups, and periodically test restore procedures.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 8.2",
+    "enabled": true
+  },
+  {
+    "id": "8.3",
+    "group": "Backup",
+    "title": "Ensure miscellaneous configuration settings are correct",
+    "check_type": "manual",
+    "expected": "",
+    "validation": "",
+    "severity": "MEDIUM",
+    "platforms": [
+      "self-managed",
+      "rds",
+      "aurora",
+      "azure-flex"
+    ],
+    "rationale": "Backup retention, verification, scheduling, and recovery procedures should be reviewed regularly to ensure successful recovery when needed.",
+    "remediation": "Review backup schedules, retention policies, restore testing procedures, monitoring, and documentation to ensure they meet organizational recovery objectives.",
+    "reference": "CIS PostgreSQL 18 Benchmark - Section 8.3",
+    "enabled": true
+  }
+]
