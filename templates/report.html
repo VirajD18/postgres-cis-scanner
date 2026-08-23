@@ -457,18 +457,6 @@ Security Compliance Assessment
 
 </tr>
 
-{{else}}
-
-<tr>
-
-<td>Platform</td>
-<td>{{displayPlatform .Inventory.Platform}}</td>
-
-<td>Benchmark</td>
-<td>{{.Inventory.Benchmark}}</td>
-
-</tr>
-
 {{end}}
 
 {{if .Inventory.DRHost}}
@@ -478,14 +466,12 @@ Security Compliance Assessment
 <td>DR Host</td>
 <td>{{.Inventory.DRHost}}</td>
 
-<td>Benchmark</td>
-<td>{{.Inventory.Benchmark}}</td>
+<td></td>
+<td></td>
 
 </tr>
 
 {{end}}
-
-{{if .Inventory.HAHosts}}
 
 <tr>
 
@@ -506,20 +492,6 @@ Security Compliance Assessment
 <td></td>
 
 </tr>
-
-{{else}}
-
-<tr>
-
-<td>Generated</td>
-<td>{{.Generated}}</td>
-
-<td>Managed Service</td>
-<td>{{.Inventory.ManagedService}}</td>
-
-</tr>
-
-{{end}}
 
 </table>
 
