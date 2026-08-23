@@ -431,67 +431,81 @@ Security Compliance Assessment
 <table class="infoTable">
 
 <tr>
-
 <td>Primary Host</td>
 <td>{{.Inventory.Host}}</td>
-
 <td>Version</td>
 <td>{{.Inventory.PostgresVersion}}</td>
-
 </tr>
 
-{{if .Inventory.HAHosts}}
+<tr>
+<td>Platform</td>
+<td>{{displayPlatform .Inventory.Platform}}</td>
+<td>Benchmark</td>
+<td>{{.Inventory.Benchmark}}</td>
+</tr>
+
+{{if and .Inventory.HAHosts .Inventory.DRHost}}
 
 <tr>
-
 <td>HA / Read Replica</td>
-
 <td>
 {{range .Inventory.HAHosts}}
 {{.}}<br>
 {{end}}
 </td>
-
-<td>Platform</td>
-<td>{{displayPlatform .Inventory.Platform}}</td>
-
-</tr>
-
-{{end}}
-
-{{if .Inventory.DRHost}}
-
-<tr>
-
-<td>DR Host</td>
-<td>{{.Inventory.DRHost}}</td>
-
-<td></td>
-<td></td>
-
-</tr>
-
-{{end}}
-
-<tr>
-
-<td>Benchmark</td>
-<td>{{.Inventory.Benchmark}}</td>
-
 <td>Managed Service</td>
 <td>{{.Inventory.ManagedService}}</td>
-
 </tr>
 
 <tr>
-
+<td>DR Host</td>
+<td>{{.Inventory.DRHost}}</td>
 <td>Generated</td>
 <td>{{.Generated}}</td>
-
-<td></td>
-<td></td>
-
 </tr>
+
+{{else if .Inventory.HAHosts}}
+
+<tr>
+<td>HA / Read Replica</td>
+<td>
+{{range .Inventory.HAHosts}}
+{{.}}<br>
+{{end}}
+</td>
+<td>Managed Service</td>
+<td>{{.Inventory.ManagedService}}</td>
+</tr>
+
+<tr>
+<td>Generated</td>
+<td>{{.Generated}}</td>
+</tr>
+
+{{else if .Inventory.DRHost}}
+
+<tr>
+<td>DR Host</td>
+<td>{{.Inventory.DRHost}}</td>
+<td>Managed Service</td>
+<td>{{.Inventory.ManagedService}}</td>
+</tr>
+
+<tr>
+<td>Generated</td>
+<td>{{.Generated}}</td>
+</tr>
+
+{{else}}
+
+<tr>
+<td>Managed Service</td>
+<td>{{.Inventory.ManagedService}}</td>
+<td>Generated</td>
+<td>{{.Generated}}</td>
+</tr>
+
+{{end}}
 
 </table>
 
@@ -765,3 +779,4 @@ Generated :
 </body>
 
 </html>
+
