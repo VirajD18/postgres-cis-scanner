@@ -26,7 +26,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          version="v3.0.2"
+          latest=$(gh release list --limit 100 --json tagName --jq '.[].tagName' \
+            | grep -E '^v3\.0\.[0-9]+$' \
+            | sort -V \
+            | tail -1)
+
+          if [ -z "$latest" ]; then
+            version="v3.0.0"
+          else
+            number=$(echo "$latest" | sed 's/^v3\.0\.//')
+            number=$((number + 1))
+            version="v3.0.$number"
+          fi
 
           rpm_version="${version#v}"
 
@@ -39,54 +50,121 @@ jobs:
 
       - name: Build PostgreSQL CIS Scanner
         run: |
-          go build -o pgcis ./cmd/pgcis
-
-      - name: Install RPM build tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+            go build -o pgcis ./cmd/pgcis
 
       - name: Prepare RPM sources
         run: |
-          mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          rm -rf dist
+          mkdir -p dist/el8 dist/el9
 
-          cp pgcis ~/rpmbuild/SOURCES/pgcis
-          cp configs/servers.json ~/rpmbuild/SOURCES/servers.json
-          cp configs/README.txt ~/rpmbuild/SOURCES/README.txt
-          cp configs/templates/iaas.json ~/rpmbuild/SOURCES/iaas.json
-          cp configs/templates/pass.json ~/rpmbuild/SOURCES/pass.json
-          cp -r benchmark ~/rpmbuild/SOURCES/benchmark
-          cp packaging/pgcis.spec ~/rpmbuild/SPECS/pgcis.spec
-          cp -r templates ~/rpmbuild/SOURCES/templates
+          mkdir -p rpm-sources
 
-          echo "=== Repository templates ==="
-          find templates -maxdepth 2 -type f -print
+          cp pgcis rpm-sources/pgcis
+          cp configs/servers.json rpm-sources/servers.json
+          cp configs/README.txt rpm-sources/README.txt
+          cp configs/templates/iaas.json rpm-sources/iaas.json
+          cp configs/templates/pass.json rpm-sources/pass.json
 
-          echo "=== RPM source templates ==="
-          find ~/rpmbuild/SOURCES/templates -maxdepth 2 -type f -print
+          cp -r benchmark rpm-sources/benchmark
+          cp -r templates rpm-sources/templates
+          cp packaging/pgcis.spec rpm-sources/pgcis.spec
 
-      - name: Set RPM version
+      - name: Build EL8 RPM
         run: |
-          sed -i "s/^Version:.*/Version:        ${{ steps.version.outputs.rpm_version }}/" \
-            ~/rpmbuild/SPECS/pgcis.spec
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            rockylinux:8 \
+            bash -c '
+              set -e
 
-          echo "RPM spec version:"
-          grep '^Version:' ~/rpmbuild/SPECS/pgcis.spec
+              dnf install -y rpm-build rpmdevtools findutils
 
-      - name: Build RPM
+              mkdir -p /root/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+
+              cp rpm-sources/pgcis /root/rpmbuild/SOURCES/pgcis
+              cp rpm-sources/servers.json /root/rpmbuild/SOURCES/servers.json
+              cp rpm-sources/README.txt /root/rpmbuild/SOURCES/README.txt
+              cp rpm-sources/iaas.json /root/rpmbuild/SOURCES/iaas.json
+              cp rpm-sources/pass.json /root/rpmbuild/SOURCES/pass.json
+
+              cp -r rpm-sources/benchmark /root/rpmbuild/SOURCES/benchmark
+              cp -r rpm-sources/templates /root/rpmbuild/SOURCES/templates
+
+              cp rpm-sources/pgcis.spec /root/rpmbuild/SPECS/pgcis.spec
+
+              sed -i "s/^Version:.*/Version:        ${{ steps.version.outputs.rpm_version }}/" \
+                /root/rpmbuild/SPECS/pgcis.spec
+
+              rpmbuild -ba /root/rpmbuild/SPECS/pgcis.spec
+
+              cp /root/rpmbuild/RPMS/x86_64/*.rpm /workspace/dist/el8/
+            '
+
+          echo "EL8 RPM:"
+          find dist/el8 -type f -name "*.rpm"
+
+      - name: Build EL9 RPM
         run: |
-          rpmbuild -ba ~/rpmbuild/SPECS/pgcis.spec
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            rockylinux:9 \
+            bash -c '
+              set -e
+
+              dnf install -y rpm-build rpmdevtools findutils
+
+              mkdir -p /root/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+
+              cp rpm-sources/pgcis /root/rpmbuild/SOURCES/pgcis
+              cp rpm-sources/servers.json /root/rpmbuild/SOURCES/servers.json
+              cp rpm-sources/README.txt /root/rpmbuild/SOURCES/README.txt
+              cp rpm-sources/iaas.json /root/rpmbuild/SOURCES/iaas.json
+              cp rpm-sources/pass.json /root/rpmbuild/SOURCES/pass.json
+
+              cp -r rpm-sources/benchmark /root/rpmbuild/SOURCES/benchmark
+              cp -r rpm-sources/templates /root/rpmbuild/SOURCES/templates
+
+              cp rpm-sources/pgcis.spec /root/rpmbuild/SPECS/pgcis.spec
+
+              sed -i "s/^Version:.*/Version:        ${{ steps.version.outputs.rpm_version }}/" \
+                /root/rpmbuild/SPECS/pgcis.spec
+
+              rpmbuild -ba /root/rpmbuild/SPECS/pgcis.spec
+
+              cp /root/rpmbuild/RPMS/x86_64/*.rpm /workspace/dist/el9/
+            '
+
+          echo "EL9 RPM:"
+          find dist/el9 -type f -name "*.rpm"
+
+      - name: Show RPMs
+        run: |
+          echo "=============================="
+          echo "EL8 RPM"
+          echo "=============================="
+          find dist/el8 -type f -name "*.rpm"
+
+          echo "=============================="
+          echo "EL9 RPM"
+          echo "=============================="
+          find dist/el9 -type f -name "*.rpm"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          RPM=$(find ~/rpmbuild/RPMS -name '*.rpm' | head -1)
+          RPM8=$(find dist/el8 -name '*.rpm' | head -1)
+          RPM9=$(find dist/el9 -name '*.rpm' | head -1)
 
-          echo "RPM: $RPM"
+          echo "RPM EL8: $RPM8"
+          echo "RPM EL9: $RPM9"
 
           gh release create "${{ steps.version.outputs.version }}" \
             ./pgcis \
-            "$RPM" \
+            "$RPM8" \
+            "$RPM9" \
             --title "PGCIS ${{ steps.version.outputs.version }}" \
             --generate-notes
