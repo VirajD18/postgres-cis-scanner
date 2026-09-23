@@ -64,8 +64,8 @@
     "title": "Ensure WAL archiving is configured and functional",
     "check_type": "parameter",
     "parameter": "archive_mode",
-    "expected": "on",
-    "validation": "equals",
+    "expected": "on,always",
+    "validation": "in",
     "severity": "HIGH",
     "platforms": [
       "self-managed"

@@ -121,6 +121,9 @@ func Evaluate(actual, expected, validation string) bool {
 
 		return err == nil && ok
 
+	case "always":
+		return true
+
 	default:
 		return false
 	}

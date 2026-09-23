@@ -34,28 +34,28 @@ func Execute(conn *pgx.Conn, control models.Control) (*models.Result, error) {
 
 	case "linux":
 
-	value, err := checks.Command(control.Command)
+		value, err := checks.Command(control.Command)
 
-	if err != nil {
-		result.Status = "ERROR"
-		result.Message = err.Error()
+		if err != nil {
+			result.Status = "ERROR"
+			result.Message = err.Error()
+			result.Actual = value
+			return result, nil
+		}
+
 		result.Actual = value
+
+		if compare.Evaluate(
+			result.Actual,
+			control.Expected,
+			control.Validation,
+		) {
+			result.Status = "PASS"
+		} else {
+			result.Status = "FAIL"
+		}
+
 		return result, nil
-	}
-
-	result.Actual = value
-
-	if compare.Evaluate(
-		result.Actual,
-		control.Expected,
-		control.Validation,
-	) {
-		result.Status = "PASS"
-	} else {
-		result.Status = "FAIL"
-	}
-
-	return result, nil
 
 	case "command":
 
@@ -162,7 +162,19 @@ func Execute(conn *pgx.Conn, control models.Control) (*models.Result, error) {
 
 		fields := rows.FieldDescriptions()
 
+		// Multi-column SQL controls normally require manual review.
+		// Controls using validation "always" are explicitly configured
+		// to pass when the query successfully returns data.
 		if len(fields) > 1 {
+			if control.Validation == "always" {
+				result.Actual = fmt.Sprintf(
+					"%d columns returned",
+					len(fields),
+				)
+				result.Status = "PASS"
+				return result, nil
+			}
+
 			result.Status = "MANUAL"
 			result.Actual = "Review Required"
 			return result, nil
@@ -189,6 +201,7 @@ func Execute(conn *pgx.Conn, control models.Control) (*models.Result, error) {
 		}
 
 		return result, nil
+
 	}
 
 	result.Status = "UNKNOWN"

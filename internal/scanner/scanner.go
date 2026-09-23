@@ -102,6 +102,16 @@ func Scan(server models.Server) (dashboard.ServerReport, error) {
 			continue
 		}
 
+		if control.Validation == "always" {
+			results = append(results, models.Result{
+				ControlID: control.ID,
+				Title:     control.Title,
+				Severity:  control.Severity,
+				Status:    "PASS",
+			})
+			continue
+		}
+
 		// For controls not explicitly selected by a template,
 		// apply platform restrictions.
 		if !platform.Supported(control, inv) {

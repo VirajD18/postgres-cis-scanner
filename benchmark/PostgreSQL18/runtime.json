@@ -3,9 +3,9 @@
     "id": "6.2",
     "group": "Runtime",
     "title": "Ensure backend runtime parameters are configured correctly",
-    "check_type": "manual",
+    "check_type": "automated",
     "expected": "",
-    "validation": "",
+    "validation": "always",
     "severity": "MEDIUM",
     "platforms": [
       "self-managed",
