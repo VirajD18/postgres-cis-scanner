@@ -5,7 +5,7 @@
     "title": "Ensure the log destinations are set correctly",
     "check_type": "parameter",
     "parameter": "log_destination",
-    "expected": "stderri,csvlog",
+    "expected": "stderr,csvlog",
     "validation": "in",
     "severity": "HIGH",
     "platforms": ["self-managed", "rds", "aurora", "azure-flex"],
