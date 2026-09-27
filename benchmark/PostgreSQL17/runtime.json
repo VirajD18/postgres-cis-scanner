@@ -4,6 +4,7 @@
     "group": "Runtime",
     "title": "Ensure backend runtime parameters are configured correctly",
     "check_type": "automated",
+    "query": "SELECT name, setting FROM pg_settings WHERE context IN ('backend','superuser-backend') ORDER BY 1;",
     "expected": "",
     "validation": "always",
     "severity": "MEDIUM",
